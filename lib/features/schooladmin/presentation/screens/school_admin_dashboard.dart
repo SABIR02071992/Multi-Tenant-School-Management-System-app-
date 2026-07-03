@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_toolbar.dart';
 import 'package:vidya_setu/core/theme/app_colors.dart';
 import '../../../../core/reusable_widgets/bottom_nav_menu.dart';
 import '../../../../core/reusable_widgets/logout_alert.dart';
@@ -80,29 +81,7 @@ class _SchoolAdminDashboardState extends ConsumerState<SchoolAdminDashboard> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        title: Text(l10n.loginTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: const Color(0xFF1E3A8A),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              AppDialogs.showLogoutDialog(
-                context: context,
-                onLogoutConfirmed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-                },
-              );
-            },
-          )
-        ],
-      ),
-      // 3. Floating Structure Stack Setup
+      appBar:KAppBar(title: l10n.loginTitle,showBackButton: false,showLogoutButton: true,),
       body: Stack(
         children: [
           // Active view space layers

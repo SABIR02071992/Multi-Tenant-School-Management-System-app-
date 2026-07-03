@@ -105,6 +105,7 @@ class SchoolCollegeAdminNotifier extends StateNotifier<AsyncValue<List<SchoolCol
     required String phone,
     required String schoolDomain,
     required String password,
+    required String role,
   }) async {
     // 🟢 1. UI Loading Toggle Layer Active kiya
     state = const AsyncValue.loading();
@@ -116,7 +117,8 @@ class SchoolCollegeAdminNotifier extends StateNotifier<AsyncValue<List<SchoolCol
         "email": email,                    // Flask backend: data.get('email')
         "mobile": phone,                   // Flask backend: data.get('mobile')
         "school_domain": schoolDomain,     // Flask backend: data.get('school_domain')
-        "password": password // Flask backend: data.get('password') [Mandatory]
+        "password": password, // Flask backend: data.get('password') [Mandatory]
+        "role": role,                      // Flask backend: data.get('role')
       };
 
       final response = await _dio.post(

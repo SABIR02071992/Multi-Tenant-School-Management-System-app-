@@ -1,7 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_button.dart';
 import 'package:vidya_setu/core/reusable_widgets/k_text_input_field.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_snackbar.dart';
 import '../../../../core/utils/form_validators.dart';
 import '../../../../core/utils/locale_provider.dart';
 import 'package:vidya_setu/l10n/generated/app_localizations.dart';
@@ -12,10 +15,8 @@ import '../../../superadmin/presentation/screens/super_admin_dashboard.dart';
 import '../../../teacher/presentation/teacher_dashboard.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  // Select College Screen se chuney gaye college ka domain pass hoga.
-  // Agar koi seedhe Super Admin portal daba kar aaya hai toh ye null hoga.
+  // Selected domain to previous screen
   final String? schoolDomain;
-
   const LoginScreen({super.key, this.schoolDomain});
 
   @override
@@ -25,6 +26,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -32,41 +34,45 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-  // Backend se jo role milega, uske according automatic dynamic navigate hoga
+    ref.read(authProvider.notifier).loginUser(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      schoolDomain: widget.schoolDomain,
+    );
+  }
+  void _goTo(BuildContext context, Widget screen) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+          (Route<dynamic> route) => false,
+    );
+  }
+
   void _navigateBasedOnRole(BuildContext context, String? userRole) {
     if (userRole == null ||
         userRole.trim().isEmpty ||
         userRole.toLowerCase() == 'super_admin') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const SuperAdminDashboard()),
-      );
+      _goTo(context, const SuperAdminDashboard());
       return;
     }
 
-    String roleClean = userRole.toLowerCase().trim();
+    final role = userRole.trim();
 
-    if (roleClean.contains('School Admin')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const SchoolAdminDashboard()),
-      );
-    } else if (roleClean.contains('Teacher') || roleClean.contains('faculty')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const TeacherDashboard()),
-      );
-    } else if (roleClean.contains('Student') || roleClean.contains('parent')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const ParentDashboard()),
-      );
+    if (role == 'School Admin') {
+      _goTo(context, const SchoolAdminDashboard());
+    } else if (role == 'Teacher' || role == 'faculty') {
+      _goTo(context, const TeacherDashboard());
+    } else if (role == 'Student' || role == 'Parent') {
+      _goTo(context, const ParentStudentDashboard());
     } else {
-      // Security alert
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Invalid Role!: $userRole')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid Role!: $userRole')),
+      );
     }
   }
 
@@ -84,20 +90,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen(authProvider, (previous, next) {
       next.maybeWhen(
         data: (user) {
-          log("#Role: ${user?.role}");
           if (user != null && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${l10n.welcome}, ${user.name}!')),
-            );
+             AppSnackBar.showSuccessSnackBar(context: context, title: l10n.welcome, message: user.name);
             _navigateBasedOnRole(context, user.role);
           }
         },
         error: (error, stackTrace) {
-          log("#Role: ${error.toString()}");
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${l10n.error}: ${error.toString()}')),
-            );
+            AppSnackBar.showErrorSnackBar(context: context, title: l10n.welcome, message: error.toString());
           }
         },
         orElse: () {},
@@ -110,7 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         elevation: 0,
         leading: widget.schoolDomain != null
             ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: Color(0xFF1E3A8A)),
+                icon: const Icon(Icons.arrow_back, color: AppColors.primary),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
@@ -121,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               icon: const Icon(
                 Icons.language,
                 size: 32,
-                color: Color(0xFF1E3A8A),
+                color: AppColors.primary,
               ),
               tooltip: 'Change Language',
               initialValue: currentLocale,
@@ -133,7 +133,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   value: Locale('en'),
                   child: Row(
                     children: [
-                      Icon(Icons.translate, size: 20, color: Colors.grey),
+                      Icon(Icons.translate, size: 20, color: AppColors.grey),
                       SizedBox(width: 8),
                       Text('English'),
                     ],
@@ -143,7 +143,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   value: Locale('hi'),
                   child: Row(
                     children: [
-                      Icon(Icons.translate, size: 20, color: Colors.grey),
+                      Icon(Icons.translate, size: 20, color: AppColors.grey),
                       SizedBox(width: 8),
                       Text('हिंदी (Hindi)'),
                     ],
@@ -157,11 +157,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.school, size: 80, color: Color(0xFF1E3A8A)),
+              const Icon(Icons.school, size: 80, color: AppColors.primary),
               const SizedBox(height: 12),
               const Text(
                 'EdConnect',
@@ -169,7 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E3A8A),
+                  color: AppColors.primary,
                 ),
               ),
 
@@ -194,7 +196,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Text(
                 l10n.appSubtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: const TextStyle(fontSize: 14, color: AppColors.grey),
               ),
               const SizedBox(height: 40),
 
@@ -204,7 +206,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: l10n.enterEmail,
                 prefixIcon: Icons.email_outlined,
                 textInputAction: TextInputAction.done,
-                validator: KFormValidators.validatePassword,
+                validator: KFormValidators.validateEmail,
               ),
 
               const SizedBox(height: 16),
@@ -215,53 +217,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: l10n.enterPassword,
                 prefixIcon: Icons.lock_outline,
                 isPassword: true,
-                // 🟢 Toggles standard obscure mode & eye visibility icon layout
                 textInputAction: TextInputAction.done,
                 validator: KFormValidators.validatePassword,
               ),
               const SizedBox(height: 24),
-              /// Login Button
 
-              ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        // Final Action call with fixed parameters
-                        ref
-                            .read(authProvider.notifier)
-                            .loginUser(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                              schoolDomain: widget
-                                  .schoolDomain,
-                            );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3A8A),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Text(
-                        l10n.loginButton,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+              /// Button
+              KButton(
+                isLoading: isLoading,
+                buttonText: l10n.loginButton,
+                onPressed: isLoading ? null : _login,
               ),
             ],
+          ),
           ),
         ),
       ),

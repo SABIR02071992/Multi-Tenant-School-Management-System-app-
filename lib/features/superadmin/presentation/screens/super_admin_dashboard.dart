@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_toolbar.dart';
 import 'package:vidya_setu/core/theme/app_colors.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/reusable_widgets/k_elevatedbutton.dart';
+import '../../../../core/reusable_widgets/k_searchable_dropdown.dart';
 import '../../../../core/reusable_widgets/logout_alert.dart';
 import '../../../../core/utils/local_storage.dart';
 import '../../../../core/utils/locale_provider.dart';
@@ -28,29 +30,10 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
     final storage = LocalStorageService();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.uperAdmin,
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF0F172A),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              AppDialogs.showLogoutDialog(
-                context: context,
-                onLogoutConfirmed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                },
-              );
-            },
-          ),
-        ],
+      appBar: KAppBar(
+        title: l10n.uperAdmin,
+        showBackButton: false,
+        showLogoutButton: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -90,7 +73,7 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
                   l10n.activeSubscription,
                   '38',
                   Icons.card_membership,
-                  AppColors.gold,
+                  AppColors.warning,
                   () {},
                 ),
                 _buildSAStatCard(
@@ -136,71 +119,40 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
             ),
             const SizedBox(height: 12),
             KElevatedButton(
-              label: 'Create School Admin',
+              label: 'Create User',
               icon: Icons.supervised_user_circle_outlined,
-              onPressed: () {
-                // 1. Check karein ki data successfully loaded hai ya nahi
-                schoolsAsync.whenData((schoolList) {
+              onPressed: () async {
+                schoolsAsync.whenData((schoolList) async {
                   if (schoolList.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("No schools registered yet! Onboard a school first.")),
+                      const SnackBar(
+                        content: Text(
+                          "No schools registered yet! Onboard a school first.",
+                        ),
+                      ),
                     );
                     return;
                   }
 
-                  // 2. Dialog open karein jo dropdown dikhaye
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      String? selectedDomain = schoolList.first.domain; // Default select first item
-
-                      return AlertDialog(
-                        title: const Text("Select School/College", style: TextStyle(fontWeight: FontWeight.bold)),
-                        content: StatefulBuilder(
-                          builder: (context, setDialogState) {
-                            return DropdownButtonFormField<String>(
-                              value: selectedDomain,
-                              isExpanded: true,
-                              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Choose Institution',contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),),
-                              items: schoolList.map((school) {
-                                return DropdownMenuItem<String>(
-                                  value: school.domain, // 🟢 Dynamic domain id map ho rhi hai
-                                  child: Text(school.schoolName,overflow: TextOverflow.ellipsis,maxLines: 2,), // School ka name UI me dikhega
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setDialogState(() {
-                                  selectedDomain = value;
-                                });
-                              },
-                            );
-                          },
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text("Cancel"),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F172A)),
-                            onPressed: () {
-                              Navigator.pop(context); // Close dialog
-                              // 3. Target screen pr navigate karein dynamic domain ke sath
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.createSchoolCollegeAdmin,
-                                arguments: selectedDomain, // 🟢 Dynamic ID successfully forward ho gayi
-                              );
-                            },
-                            child: const Text("Proceed", style: TextStyle(color: Colors.white)),
-                          ),
-                        ],
+                  final String? selectedDomain =
+                      await KSearchableDropdownDialog.show(
+                        context: context,
+                        title: "Select School/College",
+                        items: schoolList,
+                        itemLabelBuilder: (school) => school.schoolName,
+                        itemValueBuilder: (school) => school.domain,
                       );
-                    },
-                  );
+
+                  if (selectedDomain != null && context.mounted) {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.createSchoolCollegeAdmin,
+                      arguments: selectedDomain,
+                    );
+                  }
                 });
               },
-            )
+            ),
           ],
         ),
       ),
@@ -233,12 +185,9 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
-      // 🔥 Yeh ripple effect ko rounded corners ke bahar nahi jaane dega
       child: InkWell(
         onTap: onTap,
-        // 🔥 Aapka click action yahan execute hoga
         splashColor: color.withOpacity(0.1),
-        // Card ke color jaisa light ripple effect
         highlightColor: color.withOpacity(0.05),
         child: Padding(
           padding: const EdgeInsets.all(12.0),

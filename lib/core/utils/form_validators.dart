@@ -26,7 +26,7 @@ class KFormValidators {
     );
 
     if (!emailRegex.hasMatch(cleanVal)) {
-      return "Please enter a valid email address (e.g., name@domain.com)";
+      return "Please enter a valid email address";
     }
     return null;
   }

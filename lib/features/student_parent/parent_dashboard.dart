@@ -1,32 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_toolbar.dart';
 import '../../core/reusable_widgets/logout_alert.dart';
 import '../auth/presentation/screens/login_screen.dart';
 
-class ParentDashboard extends StatelessWidget {
-  const ParentDashboard({super.key});
+class ParentStudentDashboard extends StatelessWidget {
+  const ParentStudentDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('छात्र / अभिभावक पोर्टल', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: const Color(0xFF4F46E5), // पैरेंट पोर्टल के लिए इंडिगो थीम
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: (){
-                AppDialogs.showLogoutDialog(context: context, onLogoutConfirmed: (){
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                });
-              }
-          )
-        ],
-      ),
+      appBar:KAppBar(title: 'छात्र / अभिभावक पोर्टल',showBackButton: false,showLogoutButton: true,),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -6,7 +6,7 @@ class AppRoutes {
   static const String superAdminDashboard = '/super-admin-dashboard';
   static const String schoolAdminDashboard = '/school-admin-dashboard';
   static const String teacherDashboard = '/teacher-dashboard';
-  static const String parentDashboard = '/parent-dashboard';
+  static const String parenStudentDashboard = '/parent-dashboard';
   static const String schoolSetup = '/school-setup';
   static const String allRegisterSchools = '/all-register-schools';
   static const String createSchoolCollegeAdmin = '/create-school-college-admin';

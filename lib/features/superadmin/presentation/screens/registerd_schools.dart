@@ -44,7 +44,7 @@ class _AllRegisterSchoolsState extends ConsumerState<AllRegisterSchools> {
 
               return Card(
                 elevation: isExpanded ? 4 : 2,
-                shadowColor: AppColors.redShad,
+                shadowColor: AppColors.red,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -234,7 +234,7 @@ class _AllRegisterSchoolsState extends ConsumerState<AllRegisterSchools> {
               SizedBox(height: 16),
               Text(
                 'Fetching secure directory...',
-                style: TextStyle(color: AppColors.grey300),
+                style: TextStyle(color: AppColors.textHint),
               ),
             ],
           ),
@@ -249,7 +249,7 @@ class _AllRegisterSchoolsState extends ConsumerState<AllRegisterSchools> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary2),
+        Icon(icon, size: 16, color: AppColors.textSecondary),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -259,7 +259,7 @@ class _AllRegisterSchoolsState extends ConsumerState<AllRegisterSchools> {
                 label,
                 style: const TextStyle(
                   fontSize: 11,
-                  color: AppColors.textSecondary2,
+                  color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),

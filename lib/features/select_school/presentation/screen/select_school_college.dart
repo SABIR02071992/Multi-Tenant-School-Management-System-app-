@@ -1,7 +1,8 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:vidya_setu/core/theme/app_colors.dart';
+import '../../../../core/reusable_widgets/k_dropdown.dart';
+import '../../../../core/reusable_widgets/k_searchable_dropdown.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../superadmin/presentation/providers/school_onboard_state_provider.dart';
@@ -10,14 +11,11 @@ class SelectCollegeScreen extends ConsumerStatefulWidget {
   const SelectCollegeScreen({super.key});
 
   @override
-  ConsumerState<SelectCollegeScreen> createState() =>
-      _SelectCollegeScreenState();
+  ConsumerState<SelectCollegeScreen> createState() => _SelectCollegeScreenState();
 }
 
-class _SelectCollegeScreenState
-    extends ConsumerState<SelectCollegeScreen> {
+class _SelectCollegeScreenState extends ConsumerState<SelectCollegeScreen> {
   List<dynamic> _allSchools = [];
-
   dynamic _selectedSchool;
 
   @override
@@ -28,16 +26,39 @@ class _SelectCollegeScreenState
 
   Future<void> _loadSchools() async {
     try {
-      final schools =
-      await ref.read(dashboardSchoolsFutureProvider.future);
-
+      final schools = await ref.read(dashboardSchoolsFutureProvider.future);
       if (!mounted) return;
-
       setState(() {
         _allSchools = schools;
       });
     } catch (e) {
       debugPrint("Error loading schools : $e");
+    }
+  }
+
+  // 🟢 Custom Search Dialog trigger karne ka function
+  void _openSearchableDialog() async {
+    if (_allSchools.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No schools registered yet!")),
+      );
+      return;
+    }
+
+    final String? selectedDomain = await KSearchableDropdownDialog.show<dynamic>(
+      context: context,
+      title: "Select School / College",
+      items: _allSchools,
+      itemLabelBuilder: (school) => school.schoolName,
+      itemValueBuilder: (school) => school.domain,
+      initialValue: _selectedSchool?.domain,
+    );
+
+    if (selectedDomain != null && mounted) {
+      setState(() {
+        // Domain matching object find karke set karenge
+        _selectedSchool = _allSchools.firstWhere((school) => school.domain == selectedDomain);
+      });
     }
   }
 
@@ -47,15 +68,16 @@ class _SelectCollegeScreenState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.scaffold, // 🟢 Theme consistency
       body: SafeArea(
         child: schoolState.when(
           loading: () => const Center(
             child: CircularProgressIndicator(
-              color: Color(0xFF1E3A8A),
+              color: AppColors.primary, // 🟢 Theme matching spinner
             ),
           ),
           error: (error, _) => Center(
-            child: Text("${l10n.error}: $error"),
+            child: Text("${l10n.error}: $error", style: const TextStyle(color: AppColors.red)),
           ),
           data: (_) => Padding(
             padding: const EdgeInsets.all(24),
@@ -64,89 +86,42 @@ class _SelectCollegeScreenState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Icon(
-                  Icons.school,
+                  Icons.school_rounded,
                   size: 70,
-                  color: Color(0xFF1E3A8A),
+                  color: AppColors.primary, // 🟢 Soft premium look
                 ),
-
                 const SizedBox(height: 16),
-
-                Text(
+                const Text(
                   "Select School / College",
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E3A8A),
+                    color: AppColors.textPrimary,
                   ),
                 ),
-
                 const SizedBox(height: 35),
 
-                /// SEARCHABLE DROPDOWN
-                DropdownSearch<dynamic>(
-                  items: (filter, infiniteScrollProps) {
-                    if (filter.isEmpty) {
-                      return _allSchools;
-                    }
-
-                    return _allSchools.where((school) {
-                      return school.schoolName
-                          .toLowerCase()
-                          .contains(filter.toLowerCase());
-                    }).toList();
-                  },
-
-                  selectedItem: _selectedSchool,
-
-                  itemAsString: (school) => school.schoolName,
-
-                  compareFn: (item1, item2) =>
-                  item1.domain == item2.domain,
-
-                  popupProps: PopupProps.menu(
-                    showSearchBox: true,
-                    fit: FlexFit.loose,
-
-                    searchFieldProps: const TextFieldProps(
-                      decoration: InputDecoration(
-                        hintText: "Search School / College",
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-
-                    emptyBuilder: (context, searchEntry) {
-                      return const Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Center(
-                          child: Text("No School Found"),
-                        ),
-                      );
-                    },
-                  ),
-
-                  decoratorProps: const DropDownDecoratorProps(
-                    decoration: InputDecoration(
+                /// 🟢 YOUR CUSTOM DESIGNED KDROWDOWN FIELD
+                // Tap karne par yeh field dialog trigger karegi
+                InkWell(
+                  onTap: _openSearchableDialog,
+                  borderRadius: BorderRadius.circular(8),
+                  child: IgnorePointer(
+                    child: KDropdown(
                       labelText: "Choose College",
                       hintText: "Select School",
-                      prefixIcon: Icon(
-                        Icons.account_balance,
-                        color: Color(0xFF1E3A8A),
-                      ),
-                      border: OutlineInputBorder(),
+                      value: _selectedSchool?.schoolName, // UI me selected school ka naam dikhane ke liye
+                      prefixIcon: Icons.account_balance_rounded,
+                      items: _selectedSchool != null ? [_selectedSchool.schoolName] : [],
+                      onChanged: (_) {},
                     ),
                   ),
-
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSchool = value;
-                    });
-                  },
                 ),
 
                 const SizedBox(height: 35),
 
+                // 🟢 AppColors layout matching ElevateButton
                 ElevatedButton(
                   onPressed: _selectedSchool == null
                       ? null
@@ -155,39 +130,37 @@ class _SelectCollegeScreenState
                       context,
                       MaterialPageRoute(
                         builder: (_) => LoginScreen(
-                          schoolDomain:
-                          _selectedSchool.domain,
+                          schoolDomain: _selectedSchool.domain,
                         ),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E3A8A),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.border, // Disabled state logic
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    elevation: 0,
                   ),
-                  child: const Text(
+                  child: Text(
                     "Next",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: _selectedSchool == null ? AppColors.textHint : AppColors.textLight,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
                       "Are you a Super Admin? ",
                       style: TextStyle(
-                        color: Colors.grey,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
                     ),
@@ -197,7 +170,7 @@ class _SelectCollegeScreenState
                           context,
                           MaterialPageRoute(
                             builder: (_) => const LoginScreen(
-                              schoolDomain: null, // ya "super_admin" agar required ho
+                              schoolDomain: null,
                             ),
                           ),
                         );
@@ -205,7 +178,7 @@ class _SelectCollegeScreenState
                       child: const Text(
                         "Login Here",
                         style: TextStyle(
-                          color: Color(0xFF1E3A8A),
+                          color: AppColors.secondary, // 🟢 Indigo link highlight matching branding
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
