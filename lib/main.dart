@@ -5,7 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:vidya_setu/features/auth/presentation/screens/splash_screen.dart';
 import 'package:vidya_setu/features/schooladmin/presentation/screens/school_admin_dashboard.dart';
-import 'package:vidya_setu/features/superadmin/presentation/screens/create_school_college_admin_screen.dart';
+import 'package:vidya_setu/features/superadmin/presentation/screens/create_user.dart';
 import 'package:vidya_setu/features/superadmin/presentation/screens/registerd_schools.dart';
 import 'package:vidya_setu/features/teacher/presentation/teacher_dashboard.dart';
 import 'core/constants/route_constants.dart';
@@ -65,14 +65,14 @@ class MyApp extends ConsumerWidget {
         AppRoutes.superAdminDashboard: (context) => const SuperAdminDashboard(),
         AppRoutes.schoolAdminDashboard: (context) => const SchoolAdminDashboard(),
         AppRoutes.teacherDashboard: (context) => const TeacherDashboard(),
-        AppRoutes.parentDashboard: (context) => const ParentDashboard(),
-        AppRoutes.schoolSetup: (context) => const SchoolSetupScreen(),
+        AppRoutes.parenStudentDashboard: (context) => const ParentStudentDashboard(),
+        AppRoutes.schoolSetup: (context) => const OnBoardNewSchoolCollege(),
         AppRoutes.allRegisterSchools: (context) => const AllRegisterSchools(),
         AppRoutes.selectCollegeScreen: (context) => const SelectCollegeScreen(),
         // 🟢 Wright way: ModalRoute के ज़रिए पास किए गए arguments को रिसीव करना
         AppRoutes.createSchoolCollegeAdmin: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as String?;
-          return CreateSchoolCollegeAdminScreen(schoolDomain: args!);
+          return CreateNewUser(schoolDomain: args!);
         },
 
       },

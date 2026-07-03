@@ -2,19 +2,24 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_button.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_dropdown.dart';
+import 'package:vidya_setu/core/reusable_widgets/k_text_input_field.dart';
+import '../../../../core/reusable_widgets/k_toolbar.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../domain/entity/super_admin_entity.dart';
 import '../providers/school_onboard_state_provider.dart';
 
-class SchoolSetupScreen extends ConsumerStatefulWidget {
-  const SchoolSetupScreen({super.key});
+class OnBoardNewSchoolCollege extends ConsumerStatefulWidget {
+  const OnBoardNewSchoolCollege({super.key});
 
   @override
-  ConsumerState<SchoolSetupScreen> createState() => _SchoolSetupScreenState();
+  ConsumerState<OnBoardNewSchoolCollege> createState() =>
+      _SchoolSetupScreenState();
 }
 
-class _SchoolSetupScreenState extends ConsumerState<SchoolSetupScreen> {
+class _SchoolSetupScreenState extends ConsumerState<OnBoardNewSchoolCollege> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
@@ -45,9 +50,7 @@ class _SchoolSetupScreenState extends ConsumerState<SchoolSetupScreen> {
   Future<void> _submitSetupData() async {
     if (!_formKey.currentState!.validate() || _selectedLogo == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please upload logo image and fill data arrays'),
-        ),
+        const SnackBar(content: Text('Please upload logo image and fill data arrays'),),
       );
       return;
     }
@@ -112,14 +115,7 @@ class _SchoolSetupScreenState extends ConsumerState<SchoolSetupScreen> {
     final isLoading = schoolState.isLoading;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.newSchoolOnboard,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color(0xFF1E3A8A),
-        foregroundColor: Colors.white,
-      ),
+      appBar: KAppBar(title: l10n.newSchoolOnboard, showBackButton: true),
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF1E3A8A)),
@@ -169,75 +165,48 @@ class _SchoolSetupScreenState extends ConsumerState<SchoolSetupScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    TextFormField(
+
+                    /// School Name
+                    KTextField(
                       controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: l10n.schoolName,
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.school_outlined),
-                      ),
-                      validator: (v) =>
-                          v!.isEmpty ? 'Please type school name' : null,
+                      labelText: l10n.schoolName,
+                      prefixIcon: Icons.school_outlined,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+
+                    /// School Domain
+                    KTextField(
                       controller: _domainController,
-                      decoration: InputDecoration(
-                        labelText: l10n.schoolDomain,
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.link_outlined),
-                      ),
-                      validator: (v) => v!.isEmpty
-                          ? 'Please type routing domain configuration'
-                          : null,
+                      labelText: l10n.schoolDomain,
+                      prefixIcon: Icons.link_outlined,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+
+                    /// Admin Email
+                    KTextField(
                       controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminEmail,
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.mail_outline),
-                      ),
-                      validator: (v) => v!.isEmpty
-                          ? 'Please specify email key address'
-                          : null,
+                      labelText: l10n.adminEmail,
+                      prefixIcon: Icons.email_outlined,
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
+
+                    KDropdown(
+                      labelText: l10n.allocatedPackage,
+                      hintText: l10n.allocatedPackage,
+                      prefixIcon: Icons.workspace_premium_outlined,
                       value: _selectedPlan,
-                      decoration: InputDecoration(
-                        labelText: l10n.allocatedPackage,
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.workspace_premium_outlined),
-                      ),
-                      items: _plans
-                          .map(
-                            (p) => DropdownMenuItem(value: p, child: Text(p)),
-                          )
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => _selectedPlan = value!),
+                      items: _plans,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedPlan = value!;
+                        });
+                      },
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton(
+                    KButton(
+                      isLoading: false,
                       onPressed: _submitSetupData,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E3A8A),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        l10n.btnAddSchool,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      buttonText: l10n.btnAddSchool,
                     ),
                   ],
                 ),

@@ -201,13 +201,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
       return ;
     }
 
-   if (role == 'School Aadmin') {
+   if (role == 'School Admin') {
       _navigateTo(const SchoolAdminDashboard());
     } else if (role == 'Teacher') {
       _navigateTo(const TeacherDashboard());
-    } else if (role == 'Student Parent') {
-      _navigateTo(const ParentDashboard());
-    } else {
+    } else if (role == 'Student') {
+      _navigateTo(const ParentStudentDashboard());
+    } else if (role == 'Parent') {
+     _navigateTo(const ParentStudentDashboard());
+   }
+   else {
       _navigateTo(const SuperAdminDashboard());
     }
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import 'k_loader.dart';
 
 class KButton extends StatelessWidget {
   final bool isLoading;
@@ -15,30 +17,33 @@ class KButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      // Agar loading chal rahi hai toh button disable (null) ho jayega
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: AppColors.primary,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: isLoading
-          ? const SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(
-          color: Colors.white,
-          strokeWidth: 2,
-        ),
-      )
-          : Text(
-        buttonText,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        child: isLoading
+            ? const SizedBox(
+          key: ValueKey('loader'),
+          height: 24,
+          child: KLoader(
+            color: AppColors.white,
+            size: 8,
+          ),
+        )
+            : Text(
+          buttonText,
+          key: const ValueKey('text'),
+          style: const TextStyle(
+            fontSize: 16,
+            color: AppColors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

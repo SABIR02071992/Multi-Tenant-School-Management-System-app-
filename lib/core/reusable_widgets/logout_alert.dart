@@ -50,7 +50,7 @@ class AppDialogs {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.redShad,
+              color: AppColors.red,
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -93,7 +93,7 @@ class AppDialogs {
                     Navigator.pop(context);
                   },
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.grey300),
+                    side: BorderSide(color: AppColors.textHint),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),

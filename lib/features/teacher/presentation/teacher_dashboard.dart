@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/reusable_widgets/k_toolbar.dart';
 import '../../../core/reusable_widgets/logout_alert.dart';
 import '../../auth/presentation/screens/login_screen.dart';
 
@@ -8,25 +9,7 @@ class TeacherDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('शिक्षक पोर्टल (Faculty)', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: const Color(0xFF0284C7), // लाइट ब्लू थीम फॉर टीचर्स
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: (){
-                AppDialogs.showLogoutDialog(context: context, onLogoutConfirmed: (){
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                });
-              }
-          )
-        ],
-      ),
+      appBar: KAppBar(title: 'शिक्षक पोर्टल (Faculty)',showBackButton: false,showLogoutButton: true,),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
