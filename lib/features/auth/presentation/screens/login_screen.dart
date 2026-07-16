@@ -9,10 +9,10 @@ import '../../../../core/utils/form_validators.dart';
 import '../../../../core/utils/locale_provider.dart';
 import 'package:vidya_setu/l10n/generated/app_localizations.dart';
 import '../providers/auth_state_provider.dart';
-import '../../../schooladmin/presentation/screens/school_admin_dashboard.dart';
-import '../../../student_parent/parent_dashboard.dart';
+import '../../../schooladmin/presentation/screens/school_admin_main_screen.dart';
+import '../../../student_parent/presentation/screens/parent_student_dashboard.dart';
 import '../../../superadmin/presentation/screens/super_admin_dashboard.dart';
-import '../../../teacher/presentation/teacher_dashboard.dart';
+import '../../../teacher/presentation/screens/teacher_main_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   // Selected domain to previous screen
@@ -64,9 +64,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final role = userRole.trim();
 
     if (role == 'School Admin') {
-      _goTo(context, const SchoolAdminDashboard());
+      _goTo(context, const SchoolAdminMainScreen());
     } else if (role == 'Teacher' || role == 'faculty') {
-      _goTo(context, const TeacherDashboard());
+      _goTo(context, const TeacherMainScreen());
     } else if (role == 'Student' || role == 'Parent') {
       _goTo(context, const ParentStudentDashboard());
     } else {

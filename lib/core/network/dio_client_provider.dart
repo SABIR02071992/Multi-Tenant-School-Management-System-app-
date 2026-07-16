@@ -3,12 +3,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../utils/local_storage.dart';
+import '../widgets/k_no_internet_dialog.dart';
 import 'api_client.dart';
+import 'internet_service.dart';
 
 final dioClientProvider = Provider<Dio>((ref) {
   final dio = Dio();
-
-  // यहाँ अपनी लोकल स्टोरेज सर्विस का इंस्टेंस लें (ताकि टोकन रीड कर सकें)
   final storage = LocalStorageService();
 
   dio.options.baseUrl = ApiClient.baseUrl;
@@ -23,8 +23,21 @@ final dioClientProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final String? token = storage.getToken();
 
+        final connected = await InternetService.instance.hasInternet();
+        if (!connected) {
+          showNoInternetDialog();
+
+          return handler.reject(
+            DioException(
+              requestOptions: options,
+              type: DioExceptionType.connectionError,
+              error: "No Internet Connection",
+            ),
+          );
+        }
+
+        final String? token = storage.getToken();
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }
@@ -37,11 +50,9 @@ final dioClientProvider = Provider<Dio>((ref) {
           log("📦 BODY: ${options.data is FormData ? 'FormData (Multipart)' : options.data}");
         }
         log("===================================\n");
-
         return handler.next(options);
       },
 
-      // 📥 जब सर्वर से Response वापस आएगा (लॉग प्रिंट होगा)
       onResponse: (response, handler) {
         log("\n========== 📥 API RESPONSE ==========");
         log("🔗 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}");
@@ -51,7 +62,6 @@ final dioClientProvider = Provider<Dio>((ref) {
         return handler.next(response);
       },
 
-      // ❌ अगर API में कोई Error आता है (जैसे 401 Unauthorized या 500)
       onError: (DioException e, handler) {
         log("\n========== 🚨 API ERROR ==========");
         log("🔗 URL: ${e.requestOptions.baseUrl}${e.requestOptions.path}");
@@ -60,7 +70,6 @@ final dioClientProvider = Provider<Dio>((ref) {
         log("📄 ERROR DATA: ${e.response?.data}");
         log("==================================\n");
 
-        // 💡 बोनस: अगर टोकन एक्सपायर हो जाता है (401 Error), तो यूज़र को लॉगआउट करने का लॉजिक यहाँ डाल सकते हैं
         if (e.response?.statusCode == 401) {
           log("⚠️ Token expired or invalid! User needs to re-login.");
         }
@@ -69,6 +78,5 @@ final dioClientProvider = Provider<Dio>((ref) {
       },
     ),
   );
-
   return dio;
 });

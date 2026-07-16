@@ -171,7 +171,7 @@ class SchoolCollegeAdminNotifier extends StateNotifier<AsyncValue<List<SchoolCol
 }
 
 /// Create school/college admin user global provider index
-final schoolCollegeAdminProvider =
+final createUser =
 StateNotifierProvider<SchoolCollegeAdminNotifier, AsyncValue<List<SchoolCollegeAdminEntity>>>((ref) {
   final dio = ref.watch(dioClientProvider);
   return SchoolCollegeAdminNotifier(dio);

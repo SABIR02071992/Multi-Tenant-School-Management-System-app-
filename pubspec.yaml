@@ -44,6 +44,10 @@ dependencies:
   flutter_animate: ^4.5.2
   dropdown_search: ^6.0.1
   intl: 0.20.2
+  connectivity_plus: ^6.0.5
+  internet_connection_checker_plus: ^2.5.2
+  geolocator: ^13.0.0
+  geocoding: ^3.0.0
 
 dev_dependencies:
   flutter_test:

@@ -14,6 +14,12 @@ class LocalStorageService {
   String? getToken() {
     return _box.read<String>('auth_token');
   }
+  void saveUser(String user){
+    _box.write('user_name', user);
+  }
+  String? getUser(){
+    return _box.read<String>('user_name');
+  }
   // Save user role
   void saveRole(String role){
     _box.write('user_role', role);

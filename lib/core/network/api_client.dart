@@ -1,4 +1,4 @@
-/*Base URL and APIs end poids declare here*/
+/// Api_client.dart
 class ApiClient {
 
   ApiClient._();  // Private constructor to prevent creating an object
@@ -19,7 +19,17 @@ class ApiClient {
   static const String userAdminLogin = '/api/v1/super-admin/login';
   static const String onboardSchool = '/api/v1/school/setup';
   static const String getAllSchool = '/api/v1/school/list';
-  //static const String createSchoolCollegeAdmin = '/api/v1/school/college';
   static const String createSchoolCollegeAdmin = '/api/v1/create-school-admin';
+  static const String settings = '/api/v1/settings';
+  static const String getAllUsersForSuperAdmin = '/api/v1/super-admin/users';
+  // Dashboard
+  static const String dashboardHome = '/api/v1/dashboard/home';
+  static const String dashboardPeople = '/api/v1/master/people';
+  static const String dashboardAcademics = '/api/v1/master/academics';
+  static const String dashboardSettings = '/api/v1/master/settings';
+  static const String createStudent = '/api/v1/student/create';
+  static const String createClasses = '/api/v1/class/create';
+  static const String getClasses = '/api/v1/class/all';
+
 
 }

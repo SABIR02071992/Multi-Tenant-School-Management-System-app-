@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/internet_service.dart';
 import '../../../../core/utils/local_storage.dart';
-import '../../../schooladmin/presentation/screens/school_admin_dashboard.dart';
+import '../../../schooladmin/presentation/screens/school_admin_main_screen.dart';
 import '../../../select_school/presentation/screen/select_school_college.dart';
-import '../../../student_parent/parent_dashboard.dart';
+import '../../../student_parent/presentation/screens/parent_student_dashboard.dart';
 import '../../../superadmin/presentation/screens/super_admin_dashboard.dart';
-import '../../../teacher/presentation/teacher_dashboard.dart';
+import '../../../teacher/presentation/screens/teacher_main_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -26,13 +27,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
   void initState() {
     super.initState();
 
-    // 🟢 1. Animation Controller Setup (Duration: 2 Seconds)
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     );
 
-    // 🟢 2. Custom Curves aur Tweens Define Kiye Hain Smoothness Ke Liye
     _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
@@ -45,15 +44,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
     );
 
-    // Animation shuru karein
     _animationController.forward();
-
-    // 🟢 3. Background Session Checking Aur Navigation Routing
     _startSessionCheck();
   }
 
-  Future<void> _startSessionCheck() async {
-    // 2.5 seconds ka wait karenge taaki animations poore dikhein aur premium feel aaye
+ /* Future<void> _startSessionCheck() async {
     await Future.delayed(const Duration(milliseconds: 2500));
     if (!mounted) return;
 
@@ -67,11 +62,32 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     } else {
       _navigateTo(const SelectCollegeScreen());
     }
+  }*/
+  Future<void> _startSessionCheck() async {
+    await Future.delayed(const Duration(milliseconds: 2500));
+
+    if (!mounted) return;
+
+    // Wail still internet connection is available
+    while (mounted && !(await InternetService.instance.hasInternet())) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    if (!mounted) return;
+
+    final storage = LocalStorageService();
+    final bool isLoggedIn = storage.getLoginStatus() ?? false;
+    final String? savedRole = storage.getRole();
+
+    if (isLoggedIn && savedRole != null) {
+      _openScreenBasedOnRole(storage);
+    } else {
+      _navigateTo(const SelectCollegeScreen());
+    }
   }
 
   void _navigateTo(Widget targetScreen) {
     if (!mounted) return;
-    // Premium Fade-Transition ke sath agli screen par bhejna bina kisi jhatke ke
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
@@ -93,7 +109,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Gradient background banaya hai premium luxury look ke liye
+
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -114,7 +130,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                 children: [
                   const Spacer(),
 
-                  // 🟢 ANIMATED BRAND LOGO ICON
                   Transform.scale(
                     scale: _scaleAnimation.value,
                     child: Container(
@@ -133,7 +148,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                   ),
                   const SizedBox(height: 24),
 
-                  // 🟢 ANIMATED APP NAME TEXT
                   Transform.translate(
                     offset: Offset(0, _slideAnimation.value),
                     child: const Column(
@@ -161,8 +175,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                   ),
 
                   const Spacer(),
-
-                  // 🟢 PRETTY BOTTOM PROGRESS INDICATOR & COPYRIGHT NOTICE
                   Column(
                     children: [
                       const SizedBox(
@@ -202,9 +214,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     }
 
    if (role == 'School Admin') {
-      _navigateTo(const SchoolAdminDashboard());
+      _navigateTo(const SchoolAdminMainScreen());
     } else if (role == 'Teacher') {
-      _navigateTo(const TeacherDashboard());
+      _navigateTo(const TeacherMainScreen());
     } else if (role == 'Student') {
       _navigateTo(const ParentStudentDashboard());
     } else if (role == 'Parent') {

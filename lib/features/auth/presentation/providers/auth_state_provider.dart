@@ -63,9 +63,10 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserEntity?>> {
           // 🟢 1. सभी स्टोरेज ऑपरेशन्स के आगे await सुनिश्चित किया
            storage.saveToken(token);
 
-          // बैकएंड से आ रहे रोल को सुरक्षित स्ट्रिंग में बदला
+
           final String serverRole = (userData['role'] ?? 'NA').toString();
            storage.saveRole(serverRole);
+           storage.saveUser(userData['name'] ?? 'NA');
           log("#Saved_Role: ${storage.getRole()}");
 
 

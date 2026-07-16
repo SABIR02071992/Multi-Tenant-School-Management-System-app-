@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class KFormValidators {
   /// 1. Admin Full Name Validator
   static String? validateAdminName(String? value) {
@@ -44,4 +46,20 @@ class KFormValidators {
     }
     return null;
   }
+
+  /// 5. Gender Validator
+  static String? validateGender(String? value) {
+    final cleanVal = value?.trim() ?? '';
+    if (cleanVal.isEmpty) return "Gender is required";
+
+    // Valid gender options
+    const validGenders = ['Male', 'Female', 'Other', 'M', 'F', 'O'];
+
+    if (!validGenders.any((gender) =>
+    gender.toLowerCase() == cleanVal.toLowerCase())) {
+      return "Please select a valid gender (Male, Female, or Other)";
+    }
+    return null;
+  }
+
 }
