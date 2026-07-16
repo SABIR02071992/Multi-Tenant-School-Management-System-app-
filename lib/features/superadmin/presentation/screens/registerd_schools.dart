@@ -19,8 +19,6 @@ class _AllRegisterSchoolsState extends ConsumerState<AllRegisterSchools> {
   @override
   Widget build(BuildContext context) {
     final schoolsAsync = ref.watch(dashboardSchoolsFutureProvider);
-    const String baseUrl = "http://192.168.29.217:5000";
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: const KAppBar(
@@ -43,8 +41,9 @@ class _AllRegisterSchoolsState extends ConsumerState<AllRegisterSchools> {
               final isExpanded = _expandedIndex == index;
 
               return Card(
-                elevation: isExpanded ? 4 : 2,
+                elevation: isExpanded ? 0.2 : 0.1,
                 shadowColor: AppColors.red,
+                color: AppColors.card,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

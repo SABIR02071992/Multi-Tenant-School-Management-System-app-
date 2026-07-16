@@ -45,7 +45,7 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? Padding(
         padding: const EdgeInsets.all(8),
         child: Material(
-          color: Colors.white.withOpacity(0.06),
+          color: AppColors.shadowLight,
           shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,
           child: IconButton(
@@ -71,16 +71,24 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
         centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              letterSpacing: -0.3,
+          Container(
+            padding:  EdgeInsets.only(left: 12, right: 12,top: 8, bottom: 8),
+            decoration: BoxDecoration(
+              color: AppColors.shadowLight,
+              borderRadius: BorderRadius.circular(12),
             ),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                letterSpacing: -0.3,
+              ),
+            ),
+
           ),
-          if (subtitle != null) ...[
+          /*if (subtitle != null) ...[
             const SizedBox(height: 2),
             Text(
               subtitle!,
@@ -90,7 +98,7 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Colors.white.withOpacity(0.6),
               ),
             ),
-          ],
+          ],*/
         ],
       ),
 

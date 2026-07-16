@@ -100,6 +100,10 @@ class SchoolNotifier extends StateNotifier<AsyncValue<List<SchoolEntity>>> {
     }
   }
 
+  Future<void> refresh() async {
+    await fetchSchoolsList();
+  }
+
   /// CREATE SCHOOL/COLLEGE ADMIN USER METHOD
   Future<bool> createSchoolCollegeAdmin({
     required String fullName,

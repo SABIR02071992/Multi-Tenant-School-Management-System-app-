@@ -1,32 +1,103 @@
 import 'package:flutter/material.dart';
-import 'package:vidya_setu/core/theme/app_colors.dart';
+import '../theme/app_colors.dart';
 
-class BottomNavMenu {
-  // --- Dimensions & Spacing ---
-  static const double barHeight = 72.0;
-  static const double barRadius = 24.0;
-  static const double bottomPadding = 20.0;
-  static const double horizontalPadding = 16.0;
-  static const double itemRadius = 16.0;
-  static const double itemInternalPadding = 10.0;
+class KBottomNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+  final List<KBottomNavItem> items;
 
-  // --- Animation Timings ---
-  static const Duration animationDuration = Duration(milliseconds: 300);
-  static const Duration textAnimationDuration = Duration(milliseconds: 200);
-  static const Curve animationCurve = Curves.easeInOut;
+  const KBottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+    required this.items,
+  });
 
-  // --- Theme Colors ---
-  static const Color navBgColor = AppColors.primary;
-  static const Color activeColor = AppColors.white;
-  static final Color inactiveColor = Colors.white.withOpacity(0.6);
-  static final Color activeBgHighlight = Colors.white.withOpacity(0.15);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 70,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.30),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(
+          items.length,
+              (index) => _NavItem(
+            item: items[index],
+            isSelected: currentIndex == index,
+            onTap: () => onTap(index),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-  // --- Shadow Layer Config ---
-  static List<BoxShadow> get barShadow => [
-    BoxShadow(
-      color: navBgColor.withOpacity(0.3),
-      blurRadius: 20,
-      offset: const Offset(0, 10),
-    ),
-  ];
+class KBottomNavItem {
+  final IconData icon;
+  final String label;
+
+  const KBottomNavItem({
+    required this.icon,
+    required this.label,
+  });
+}
+
+class _NavItem extends StatelessWidget {
+  final KBottomNavItem item;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.item,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.white.withOpacity(0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              item.icon,
+              color: isSelected ? Colors.white : Colors.white70,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.white70,
+                fontSize: 12,
+                fontWeight:
+                isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

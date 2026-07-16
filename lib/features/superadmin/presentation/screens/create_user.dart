@@ -40,7 +40,7 @@ class _CreateSchoolCollegeAdminScreenState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(schoolCollegeAdminProvider);
+    final state = ref.watch(createUser);
     final isLoading = state.isLoading;
 
     return Scaffold(
@@ -136,7 +136,7 @@ class _CreateSchoolCollegeAdminScreenState
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final String? resultMessage = await ref
-                          .read(schoolCollegeAdminProvider.notifier)
+                          .read(createUser.notifier)
                           .createNewUserForSchoolCollegeAdmin(
                             fullName: _nameController.text.trim(),
                             email: _emailController.text.trim(),

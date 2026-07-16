@@ -11,6 +11,7 @@ class AppRoutes {
   static const String allRegisterSchools = '/all-register-schools';
   static const String createSchoolCollegeAdmin = '/create-school-college-admin';
   static const String selectCollegeScreen = '/select-school-college';
-
+  static const String attendanceMarkScreen = '/attendance-mark-screen';
+  static const String createStudentScreen = '/create-student-screen';
 
 }

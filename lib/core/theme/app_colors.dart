@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -78,6 +80,7 @@ class AppColors {
   static const black = Colors.black;
   static const transparent = Colors.transparent;
   static const shadow = Color(0xE0E0E0FF);
+  static const shadowLight = Color(0x0FFFFFFF);
 
 
   // =========================
@@ -106,4 +109,32 @@ class AppColors {
   static const teacher = Color(0xFF14B8A6);
   static const student = Color(0xFFF59E0B);
   static const parent = Color(0xFFEC4899);
+
+  /// Background Colors
+  static const List<Color> backgrounds = [
+    Color(0xFFE3F2FD), // Blue
+    Color(0xFFE8F5E9), // Green
+    Color(0xFFFFF3E0), // Orange
+    Color(0xFFF3E5F5), // Purple
+    Color(0xFFFFEBEE), // Red
+    Color(0xFFE0F7FA), // Cyan
+    Color(0xFFFFFDE7), // Yellow
+    Color(0xFFEDE7F6), // Deep Purple
+    Color(0xFFFCE4EC), // Pink
+    Color(0xFFE8EAF6), // Indigo
+  ];
+
+  /// Text Colors
+  static const List<Color> foregrounds = [
+    Color(0xFF1976D2), // Blue
+    Color(0xFF2E7D32), // Green
+    Color(0xFFF57C00), // Orange
+    Color(0xFF8E24AA), // Purple
+    Color(0xFFC62828), // Red
+    Color(0xFF00838F), // Cyan
+    Color(0xFFF9A825), // Yellow
+    Color(0xFF5E35B1), // Deep Purple
+    Color(0xFFD81B60), // Pink
+    Color(0xFF3949AB), // Indigo
+  ];
 }

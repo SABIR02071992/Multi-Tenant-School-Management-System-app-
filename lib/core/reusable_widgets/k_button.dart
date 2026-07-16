@@ -6,12 +6,13 @@ class KButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback? onPressed;
   final String buttonText;
-
+  final Color? backgroundColor;
   const KButton({
     super.key,
     required this.isLoading,
     required this.onPressed,
     required this.buttonText,
+    this.backgroundColor,
   });
 
   @override
@@ -19,7 +20,7 @@ class KButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: backgroundColor ?? AppColors.primary,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

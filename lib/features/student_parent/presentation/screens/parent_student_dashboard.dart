@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vidya_setu/core/reusable_widgets/k_toolbar.dart';
-import '../../core/reusable_widgets/logout_alert.dart';
-import '../auth/presentation/screens/login_screen.dart';
-
 class ParentStudentDashboard extends StatelessWidget {
   const ParentStudentDashboard({super.key});
 

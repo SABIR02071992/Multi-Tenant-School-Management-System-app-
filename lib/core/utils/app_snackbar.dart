@@ -38,6 +38,62 @@ class AppSnackBar {
     );
   }
 
+  // 🔵 Top Info Banner
+  static void showInfo({
+    required BuildContext context,
+    required String title,
+    required String message,
+  }) {
+    final messenger = ScaffoldMessenger.of(context);
+
+    messenger.clearMaterialBanners();
+
+    messenger.showMaterialBanner(
+      MaterialBanner(
+        backgroundColor: Colors.blue,
+        leading: const Icon(
+          Icons.info_outline,
+          color: Colors.white,
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              message,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              messenger.hideCurrentMaterialBanner();
+            },
+            child: const Text(
+              "OK",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Future.delayed(const Duration(seconds: 3), () {
+      messenger.hideCurrentMaterialBanner();
+    });
+  }
+
   // 🔴 Pure Native Error Snackbar
   static void showErrorSnackBar({
     required BuildContext context,

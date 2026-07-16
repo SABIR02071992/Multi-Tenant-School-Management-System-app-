@@ -8,6 +8,8 @@ class UserModel extends UserEntity {
     required super.email,
     required super.role,
     required super.schoolId,
+    super.schoolName,
+    super.status,
   });
 
   // Flask API से आने वाले JSON को मॉडल में बदलना
@@ -18,6 +20,8 @@ class UserModel extends UserEntity {
       email: json['email'],
       role: json['role'],
       schoolId: json['school_id'].toString(),
+      schoolName: json['school_name'],
+      status: json['status'],
     );
   }
 }
