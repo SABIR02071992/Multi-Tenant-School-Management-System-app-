@@ -12,7 +12,6 @@ class CreateStudentRepositoryImpl implements CreateStudentRepository {
   @override
   Future<StudentEntity> createStudent(StudentEntity student) async {
     final model = StudentModel.fromEntity(student);
-
     return await remoteDataSource.createStudent(model);
   }
 }

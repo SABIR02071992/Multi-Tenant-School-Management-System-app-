@@ -13,5 +13,6 @@ class AppRoutes {
   static const String selectCollegeScreen = '/select-school-college';
   static const String attendanceMarkScreen = '/attendance-mark-screen';
   static const String createStudentScreen = '/create-student-screen';
+  static const String getStudentsListScreen = '/get-students-screen';
 
 }

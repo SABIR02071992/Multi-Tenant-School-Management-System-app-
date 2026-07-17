@@ -78,29 +78,26 @@ class _SchoolSetupScreenState extends ConsumerState<OnBoardNewSchoolCollege> {
       next.whenOrNull(
         data: (school) {
           if (school != null) {
-            AppSnackBar.showErrorSnackBar(
+            AppSnackBar.showSuccessSnackBar(
               context: context,
               title: 'Success',
               message: school.first.message ?? 'School added successfully',
             );
-            Future.delayed(const Duration(milliseconds: 100), () {
-              if (mounted) {
-                // Clean form data
-                _formKey.currentState?.reset();
-                _nameController.clear();
-                _domainController.clear();
-                _emailController.clear();
 
-                setState(() {
-                  _selectedLogo = null;
-                });
+            _formKey.currentState?.reset();
 
-                // Screen back
-                Navigator.pop(context);
-              }
+            _nameController.clear();
+            _domainController.clear();
+            _emailController.clear();
+
+            setState(() {
+              _selectedLogo = null;
             });
+
+            Navigator.pop(context);
           }
         },
+
         error: (error, stackTrace) {
           AppSnackBar.showErrorSnackBar(
             context: context,

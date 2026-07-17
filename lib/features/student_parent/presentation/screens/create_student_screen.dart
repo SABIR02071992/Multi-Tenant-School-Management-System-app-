@@ -6,6 +6,7 @@ import 'package:vidya_setu/core/utils/form_validators.dart';
 import '../../../../../../core/theme/app_colors.dart';
 import '../../../../../../core/reusable_widgets/k_button.dart';
 import '../../../../../../core/reusable_widgets/k_dropdown.dart';
+import '../../../../core/constants/app_lists.dart';
 import '../../../../core/reusable_widgets/k_date_picker.dart';
 import '../../../../core/reusable_widgets/k_profile_image_picker.dart';
 import '../../../../core/reusable_widgets/k_text_input_field.dart';
@@ -26,11 +27,8 @@ class CreateStudentScreen extends ConsumerStatefulWidget {
 
 class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
-  // ============================================================================
-  /// TEXT EDITING CONTROLLERS
-  // ============================================================================
   final _admissionNoController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -46,61 +44,19 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
   final _guardianMobileController = TextEditingController();
   final _addressController = TextEditingController();
 
-  // ============================================================================
-  /// DATE CONTROLLERS (For KDatePicker)
-  // ============================================================================
   final _dobController = TextEditingController();
   final _admissionDateController = TextEditingController();
 
-  // ============================================================================
-  /// DROPDOWN SELECTIONS
-  // ============================================================================
   String? _selectedGender;
   String? _selectedBloodGroup;
   String? _selectedClass;
   String? _selectedSection;
   String? _selectedSession;
 
-  // ============================================================================
-  /// DATE SELECTIONS
-  // ============================================================================
   DateTime? _selectedDob;
   DateTime? _admissionDate;
   XFile? _selectedImage;
 
-  // ============================================================================
-  // CONSTANTS
-  // ============================================================================
-  static const List<String> _genderOptions = ['Male', 'Female', 'Other'];
-  static const List<String> _bloodGroupOptions = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'AB+',
-    'AB-',
-    'O+',
-    'O-',
-  ];
-
-  static const List<String> _sectionOptions = ['A', 'B', 'C', 'D'];
-  static const List<String> _sessionOptions = [
-    '2025-26',
-    '2026-27',
-    '2027-28',
-    '2028-29',
-    '2029-30',
-    '2030-31',
-    '2031-32',
-    '2032-33',
-    '2033-34',
-    '2034-35',
-    '2035-36',
-  ];
-
-  // ============================================================================
-  /// LIFECYCLE
-  // ============================================================================
   @override
   void dispose() {
     _disposeControllers();
@@ -108,6 +64,7 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     _admissionDateController.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     super.initState();
@@ -131,9 +88,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     _addressController.dispose();
   }
 
-  // ============================================================================
-  /// BUILD
-  // ============================================================================
   @override
   Widget build(BuildContext context) {
     final classesState = ref.watch(getClassesProvider);
@@ -156,20 +110,26 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: const KAppBar(title: "Create Student"),
-          body: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-              child: Column(
-                children: [
-                  _buildPhotoPicker(),
-                  const SizedBox(height: 25),
-                  _buildPersonalInformation(),
-                  const SizedBox(height: 25),
-                  _buildAcademicInformation(),
-                  const SizedBox(height: 25),
-                  _buildParentInformation(),
-                ],
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await ref.read(getClassesProvider.notifier).refresh();
+            },
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                child: Column(
+                  children: [
+                    _buildPhotoPicker(),
+                    const SizedBox(height: 25),
+                    _buildPersonalInformation(),
+                    const SizedBox(height: 25),
+                    _buildAcademicInformation(),
+                    const SizedBox(height: 25),
+                    _buildParentInformation(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -178,10 +138,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
       },
     );
   }
-
-  // ============================================================================
-  /// BOTTOM BUTTON
-  // ============================================================================
 
   Widget _buildBottomButton() {
     final state = ref.watch(createStudentProvider);
@@ -198,10 +154,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  /// PHOTO PICKER
-  // ============================================================================
-  // In CreateStudentScreen
   Widget _buildPhotoPicker() {
     return KProfileImagePicker(
       imageFile: _selectedImage,
@@ -233,9 +185,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  /// PERSONAL INFORMATION SECTION
-  // ============================================================================
   Widget _buildPersonalInformation() {
     return _buildSection(
       icon: Icons.person,
@@ -273,25 +222,18 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  /// GENDER FIELD
-  // ============================================================================
-
   Widget _showGenderDialog1() {
     return KDropdown(
       labelText: "Select Gender",
       hintText: "Select Gender",
       prefixIcon: Icons.person,
       value: _selectedGender,
-      items: _genderOptions,
+      items: AppLists.genders,
       onChanged: (value) => setState(() => _selectedGender = value),
       dialogHeightRatio: 0.30,
     );
   }
 
-  // ============================================================================
-  /// DATE OF BIRTH FIELD - Using KDatePicker
-  // ============================================================================
   Widget _buildDateOfBirthField() {
     return KDatePicker(
       controller: _dobController,
@@ -312,24 +254,18 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  /// BLOOD GROUP DROPDOWN
-  // ============================================================================
   Widget _buildBloodGroupDropdown() {
     return KDropdown(
       labelText: "Blood Group",
       hintText: "Blood Group",
       prefixIcon: Icons.bloodtype,
       value: _selectedBloodGroup,
-      items: _bloodGroupOptions,
+      items: AppLists.bloodGroups,
       onChanged: (value) => setState(() => _selectedBloodGroup = value),
       dialogHeightRatio: 0.40,
     );
   }
 
-  // ============================================================================
-  /// MOBILE FIELD
-  // ============================================================================
   Widget _buildMobileField() {
     return KTextField(
       controller: _mobileController,
@@ -342,9 +278,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  /// EMAIL FIELD
-  // ============================================================================
   Widget _buildEmailField() {
     return KTextField(
       controller: _emailController,
@@ -355,10 +288,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
       validator: KFormValidators.validateEmail,
     );
   }
-
-  // ============================================================================
-  /// ACADEMIC INFORMATION SECTION
-  // ============================================================================
 
   Widget _buildAcademicInformation() {
     return _buildSection(
@@ -382,9 +311,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  /// CLASS DROPDOWN
-  // ============================================================================
   Widget _buildClassDropdown() {
     final classesState = ref.watch(getClassesProvider);
 
@@ -411,9 +337,7 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
       },
     );
   }
-  // ============================================================================
-  /// ADD CLASS DIALOG
-  // ============================================================================
+
   Future<void> _showAddClassDialog() async {
     await showDialog(
       context: context,
@@ -422,39 +346,30 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  // SECTION DROPDOWN
-  // ============================================================================
   Widget _buildSectionDropdown() {
     return KDropdown(
       labelText: "Section",
       hintText: "Select Section",
       prefixIcon: Icons.groups,
       value: _selectedSection,
-      items: _sectionOptions,
+      items: AppLists.sectionOptions,
       onChanged: (value) => setState(() => _selectedSection = value),
       dialogHeightRatio: 0.40,
     );
   }
 
-  // ============================================================================
-  // SESSION DROPDOWN
-  // ============================================================================
   Widget _buildSessionDropdown() {
     return KDropdown(
       labelText: "Session",
       hintText: "Select Session",
       prefixIcon: Icons.calendar_today,
       value: _selectedSession,
-      items: _sessionOptions,
+      items: AppLists.sessionOptions,
       onChanged: (value) => setState(() => _selectedSession = value),
       dialogHeightRatio: 0.40,
     );
   }
 
-  // ============================================================================
-  // ADMISSION DATE FIELD - Using KDatePicker
-  // ============================================================================
   Widget _buildAdmissionDateField() {
     return KDatePicker(
       controller: _admissionDateController,
@@ -474,9 +389,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  // PARENT INFORMATION SECTION
-  // ============================================================================
   Widget _buildParentInformation() {
     return _buildSection(
       icon: Icons.family_restroom,
@@ -553,9 +465,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  // HELPER WIDGETS
-  // ============================================================================
   Widget _buildSection({
     required IconData icon,
     required String title,
@@ -598,25 +507,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return KTextField(
-      controller: controller,
-      labelText: label,
-      hintText: hint,
-      prefixIcon: icon,
-      keyboardType: keyboardType,
-    );
-  }
-
-  // ============================================================================
-  // RESPONSIVE ROW
-  // ============================================================================
   Widget _buildResponsiveRow({required List<Widget> children}) {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
@@ -656,9 +546,6 @@ class _CreateStudentScreenState extends ConsumerState<CreateStudentScreen> {
     );
   }
 
-  // ============================================================================
-  // SUBMIT HANDLER
-  // ============================================================================
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       _createStudent();

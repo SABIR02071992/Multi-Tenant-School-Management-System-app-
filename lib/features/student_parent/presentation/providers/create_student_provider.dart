@@ -56,7 +56,6 @@ class CreateStudentNotifier
   Future<StudentEntity?> createStudent(StudentEntity student) async {
     try {
       state = const AsyncLoading();
-
       final response =
       await ref.read(createStudentUseCaseProvider).call(student);
 

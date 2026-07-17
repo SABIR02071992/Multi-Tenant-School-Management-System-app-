@@ -1,46 +1,73 @@
 import '../../domain/entities/student_entity.dart';
 
 class StudentModel extends StudentEntity {
-  const StudentModel({
-    super.id,
+  StudentModel({
+    required super.id,
     required super.admissionNo,
-    super.rollNo,
     required super.firstName,
-    super.lastName,
+    required super.lastName,
     super.gender,
     super.dob,
     super.mobile,
     super.email,
     super.fatherName,
     super.motherName,
-    required super.className,
-    required super.section,
-    super.address,
+    super.rollNo,
+    super.section,
+    super.className,
     super.photo,
+    super.status,
+    super.address,
   });
 
-  factory StudentModel.fromJson(Map<String, dynamic> json) {
+  /// Entity -> Model
+  factory StudentModel.fromEntity(StudentEntity entity) {
     return StudentModel(
-      id: json["id"],
-      admissionNo: json["admission_no"] ?? "",
-      rollNo: json["roll_no"],
-      firstName: json["first_name"] ?? "",
-      lastName: json["last_name"],
-      gender: json["gender"],
-      dob: json["dob"],
-      mobile: json["mobile"],
-      email: json["email"],
-      fatherName: json["father_name"],
-      motherName: json["mother_name"],
-      className: json["class_name"] ?? "",
-      section: json["section"] ?? "",
-      address: json["address"],
-      photo: json["photo"],
+      id: entity.id,
+      admissionNo: entity.admissionNo,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      gender: entity.gender,
+      dob: entity.dob,
+      mobile: entity.mobile,
+      email: entity.email,
+      fatherName: entity.fatherName,
+      motherName: entity.motherName,
+      rollNo: entity.rollNo,
+      section: entity.section,
+      className: entity.className,
+      photo: entity.photo,
+      status: entity.status,
+      address: entity.address,
     );
   }
 
+  /// JSON -> Model
+  factory StudentModel.fromJson(Map<String, dynamic> json) {
+    return StudentModel(
+      id: json['id'],
+      admissionNo: json['admission_no'] ?? '',
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
+      gender: json['gender'],
+      dob: json['dob'],
+      mobile: json['mobile'],
+      email: json['email'],
+      fatherName: json['father_name'],
+      motherName: json['mother_name'],
+      rollNo: json['roll_no'],
+      section: json['section'],
+      className: json['class_name'],
+      photo: json['photo'],
+      status: json['status'],
+      address: json['address'],
+    );
+  }
+
+  /// Model -> JSON
   Map<String, dynamic> toJson() {
     return {
+      "id": id,
       "admission_no": admissionNo,
       "first_name": firstName,
       "last_name": lastName,
@@ -50,30 +77,12 @@ class StudentModel extends StudentEntity {
       "email": email,
       "father_name": fatherName,
       "mother_name": motherName,
-      "class_name": className,
+      "roll_no": rollNo,
       "section": section,
-      "address": address,
+      "class_name": className,
       "photo": photo,
+      "status": status,
+      "address": address,
     };
-  }
-
-  factory StudentModel.fromEntity(StudentEntity entity) {
-    return StudentModel(
-      id: entity.id,
-      admissionNo: entity.admissionNo,
-      rollNo: entity.rollNo,
-      firstName: entity.firstName,
-      lastName: entity.lastName,
-      gender: entity.gender,
-      dob: entity.dob,
-      mobile: entity.mobile,
-      email: entity.email,
-      fatherName: entity.fatherName,
-      motherName: entity.motherName,
-      className: entity.className,
-      section: entity.section,
-      address: entity.address,
-      photo: entity.photo,
-    );
   }
 }

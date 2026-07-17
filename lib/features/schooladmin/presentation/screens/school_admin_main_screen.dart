@@ -7,9 +7,17 @@ import 'package:vidya_setu/features/schooladmin/presentation/screens/academics_s
 import 'package:vidya_setu/features/schooladmin/presentation/screens/people_screen.dart';
 import 'package:vidya_setu/features/schooladmin/presentation/screens/school_admin_home_screen.dart';
 import 'package:vidya_setu/features/schooladmin/presentation/screens/settings_screen.dart';
+import 'package:vidya_setu/features/superadmin/domain/entity/super_admin_entity.dart';
+import '../../../../core/constants/route_constants.dart';
 import '../../../../core/reusable_widgets/bottom_nav_menu.dart';
+import '../../../../core/reusable_widgets/k_searchable_dropdown.dart';
 import '../../../../core/utils/local_storage.dart';
 import '../../../../core/constants/bottom_nav_visible_provider.dart';
+import '../../../superadmin/presentation/providers/school_onboard_state_provider.dart';
+import '../providers/academics_provider.dart';
+import '../providers/dashboard_provider.dart';
+import '../providers/people_provider.dart';
+import '../providers/settings_provider.dart';
 
 class SchoolAdminMainScreen extends ConsumerStatefulWidget {
   const SchoolAdminMainScreen({super.key});
@@ -21,6 +29,8 @@ class SchoolAdminMainScreen extends ConsumerStatefulWidget {
 
 class _SchoolAdminDashboardState extends ConsumerState<SchoolAdminMainScreen> {
   final titles = ["Home", "People", "Academics", "Settings"];
+  // Track scroll position for hide/show
+  double _lastScrollOffset = 0;
   final pages = [
     const SchoolAdminHomeScreen(),
     const PeopleScreen(),
@@ -28,25 +38,39 @@ class _SchoolAdminDashboardState extends ConsumerState<SchoolAdminMainScreen> {
     const SettingsScreen(),
   ];
 
-  // Track scroll position for hide/show
-  double _lastScrollOffset = 0;
+  @override
+  void initState() {
+    super.initState();
+   // Dashboard pr first time selected Home tab
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(schoolAdminBottomNavProvider.notifier).state = 0;
+      ref.read(bottomNavVisibleProvider.notifier).state = true;
+      ref.read(schoolProvider.notifier).fetchSchoolsList();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final isBottomNavVisible = ref.watch(bottomNavVisibleProvider);
+    final schoolList = ref.watch(schoolProvider);
     final selectedIndex = ref.watch(schoolAdminBottomNavProvider);
-
     final storage = LocalStorageService();
-    final String? user = storage.getUser();
-    final String? role = storage.getRole();
+    final isLoading = _disableBottomNavBarAndAppBar(selectedIndex);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: KAppBar(
         title: titles[selectedIndex],
         showBackButton: false,
-        showLogoutButton: true,
+        showCreateUserButton: true,
+        disabled: isLoading,
+        onCreateUserPressed: () async {
+          _buildCreateUserLogic(schoolList);
+
+        },
       ),
+
       body: Stack(
         children: [
           // Main Content with Scroll Detection
@@ -77,6 +101,7 @@ class _SchoolAdminDashboardState extends ConsumerState<SchoolAdminMainScreen> {
                 opacity: isBottomNavVisible ? 1.0 : 0.0,
                 child: KBottomNavBar(
                   currentIndex: selectedIndex,
+                  disabled: isLoading,
                   onTap: (index) {
                     ref.read(schoolAdminBottomNavProvider.notifier).state = index;
                     // Show bottom nav when changing tabs
@@ -122,5 +147,59 @@ class _SchoolAdminDashboardState extends ConsumerState<SchoolAdminMainScreen> {
         ref.read(bottomNavVisibleProvider.notifier).state = true;
       }
     }
+  }
+  bool _disableBottomNavBarAndAppBar(int selectedIndex) {
+    final homeState = ref.watch(dashboardProvider);
+    final peopleState = ref.watch(peopleProvider);
+    final academicsState = ref.watch(academicsProvider);
+    final settingsState = ref.watch(schoolAdminSettingsProvider);
+
+    switch (selectedIndex) {
+      case 0:
+        return homeState.isLoading;
+
+      case 1:
+        return peopleState.isLoading;
+
+      case 2:
+        return academicsState.isLoading;
+
+      case 3:
+        return settingsState.isLoading;
+
+      default:
+        return false;
+    }
+  }
+
+  void _buildCreateUserLogic(AsyncValue<List<SchoolEntity>> schoolList) {
+    schoolList.whenData((schoolList) async {
+      if (schoolList.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "No schools registered yet! Onboard a school first.",
+            ),
+          ),
+        );
+        return;
+      }
+
+      final String? selectedDomain = await KSearchableDropdownDialog.show(
+        context: context,
+        title: "Select School/College",
+        items: schoolList,
+        itemLabelBuilder: (school) => school.schoolName,
+        itemValueBuilder: (school) => school.domain,
+      );
+
+      if (selectedDomain != null && context.mounted) {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.createSchoolCollegeAdmin,
+          arguments: selectedDomain,
+        );
+      }
+    });
   }
 }

@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:vidya_setu/features/auth/presentation/screens/splash_screen.dart';
 import 'package:vidya_setu/features/schooladmin/presentation/screens/school_admin_main_screen.dart';
+import 'package:vidya_setu/features/student_parent/presentation/screens/student_list_screen.dart';
 import 'package:vidya_setu/features/superadmin/presentation/screens/create_user.dart';
 import 'package:vidya_setu/features/superadmin/presentation/screens/registerd_schools.dart';
 import 'package:vidya_setu/features/teacher/presentation/screens/teacher_main_screen.dart';
@@ -101,7 +102,8 @@ class _MyAppState extends ConsumerState<MyApp> {
           return CreateNewUser(schoolDomain: args!);
         },
         AppRoutes.attendanceMarkScreen: (context) => const MarkAttendanceScreen(),
-        AppRoutes.createStudentScreen: (context) => const CreateStudentScreen()
+        AppRoutes.createStudentScreen: (context) => const CreateStudentScreen(),
+        AppRoutes.getStudentsListScreen: (context) => const StudentListScreen()
       },
     );
   }
