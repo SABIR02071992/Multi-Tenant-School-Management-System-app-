@@ -68,8 +68,10 @@ class _SuperAdminHomeScreenState extends ConsumerState<SuperAdminHomeScreen> {
                     children: [
                       KOutlinedButton(
                         label: 'Create School Admin',
-                        backgroundColor: AppColors.card,
                         icon: Icons.add,
+                        borderRadius: 6,
+                        backgroundColor: AppColors.addButton,
+                        borderColor: AppColors.white,
                         onPressed: () async {
                           schoolsAsync.whenData((schoolList) async {
                             if (schoolList.isEmpty) {
@@ -177,13 +179,14 @@ class _SuperAdminHomeScreenState extends ConsumerState<SuperAdminHomeScreen> {
 
                 KOutlinedButton(
                   label: '${l10n.newSchoolOnboard} (Add New School)',
+
                   onPressed: () {
                     Navigator.pushNamed(context, AppRoutes.schoolSetup);
                   },
                   icon: Icons.add_business,
-                  borderColor: AppColors.primary,
-                  backgroundColor: AppColors.card,
-                  borderRadius: 20,
+                  borderRadius: 6,
+                  backgroundColor: AppColors.addButton,
+                  borderColor: AppColors.white,
                 ),
               ],
             ),

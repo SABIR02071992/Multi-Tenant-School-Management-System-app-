@@ -4,18 +4,16 @@ class KElevatedButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
-
   final Color backgroundColor;
   final Color foregroundColor;
-
   final double? width;
   final double height;
-
   final double verticalPadding;
   final double horizontalPadding;
   final double borderRadius;
-
   final bool isLoading;
+  final Color? disabledBackgroundColor;
+  final Color? disabledForegroundColor;
 
   const KElevatedButton({
     super.key,
@@ -24,15 +22,14 @@ class KElevatedButton extends StatelessWidget {
     this.icon,
     this.backgroundColor = const Color(0xFF1E3A8A),
     this.foregroundColor = Colors.white,
-
-    // Default Size
     this.width = double.infinity,
     this.height = 50,
-
     this.verticalPadding = 16,
     this.horizontalPadding = 20,
     this.borderRadius = 8,
     this.isLoading = false,
+    this.disabledBackgroundColor,
+    this.disabledForegroundColor,
   });
 
   @override
@@ -40,6 +37,13 @@ class KElevatedButton extends StatelessWidget {
     final ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: backgroundColor,
       foregroundColor: foregroundColor,
+
+      disabledBackgroundColor:
+      disabledBackgroundColor ?? backgroundColor.withOpacity(0.5),
+
+      disabledForegroundColor:
+      disabledForegroundColor ?? foregroundColor.withOpacity(0.7),
+
       padding: EdgeInsets.symmetric(
         vertical: verticalPadding,
         horizontal: horizontalPadding,

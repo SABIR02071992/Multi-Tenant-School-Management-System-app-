@@ -14,7 +14,13 @@ class SchoolNotifier extends StateNotifier<AsyncValue<List<SchoolEntity>>> {
   SchoolNotifier(this._dio) : super(const AsyncValue.loading());
 
   /// START ONBOARD SCHOOL METHOD
-  Future<void> onboardSchool({required String schoolName, required String adminEmail, required String domain, required String planSetup, required String logoFilePath,}) async {
+  Future<void> onboardSchool({
+    required String schoolName,
+    required String adminEmail,
+    required String domain,
+    required String planSetup,
+    required String logoFilePath,
+  }) async {
     /// State ko loading karne se pehle purana data save rakh sakte hain ya direct loading
     state = const AsyncValue.loading();
 
@@ -67,7 +73,7 @@ class SchoolNotifier extends StateNotifier<AsyncValue<List<SchoolEntity>>> {
     }
   }
 
-  /// FETCH ALL SCHOOLS METHOD
+  // FETCH ALL SCHOOLS LIST METHOD
   Future<void> fetchSchoolsList() async {
     state = const AsyncValue.loading();
 
@@ -114,7 +120,8 @@ class SchoolNotifier extends StateNotifier<AsyncValue<List<SchoolEntity>>> {
     try {
       // Direct post request payload ke sath
       final response = await _dio.post(
-        ApiClient.createSchoolCollegeAdmin, // Apne ApiClient ka sahi endpoint check kar lein
+        ApiClient.createSchoolCollegeAdmin,
+        // Apne ApiClient ka sahi endpoint check kar lein
         data: {
           "full_name": fullName,
           "email": email,
@@ -125,7 +132,9 @@ class SchoolNotifier extends StateNotifier<AsyncValue<List<SchoolEntity>>> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        log("#SchoolAdminCreate: Admin user created and credentials sent to email successfully.");
+        log(
+          "#SchoolAdminCreate: Admin user created and credentials sent to email successfully.",
+        );
         return true;
       }
       return false;
@@ -167,19 +176,21 @@ class SchoolNotifier extends StateNotifier<AsyncValue<List<SchoolEntity>>> {
     }
     return errorMsg;
   }
-
 }
 
-
-
 ///  This method is used for add school
-final schoolProvider = StateNotifierProvider<SchoolNotifier, AsyncValue<List<SchoolEntity>>>((ref,) {
+final schoolProvider =
+    StateNotifierProvider<SchoolNotifier, AsyncValue<List<SchoolEntity>>>((
+      ref,
+    ) {
       final dio = ref.watch(dioClientProvider);
       return SchoolNotifier(dio);
     });
 
 /// This method is used for getting all schools
-final dashboardSchoolsFutureProvider = FutureProvider<List<SchoolEntity>>((ref,) async {
+final dashboardSchoolsFutureProvider = FutureProvider<List<SchoolEntity>>((
+  ref,
+) async {
   final notifier = ref.read(schoolProvider.notifier);
   await notifier.fetchSchoolsList();
   return ref.read(schoolProvider).value ?? [];

@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/reusable_widgets/k_custom_loader.dart';
 import '../../../../core/reusable_widgets/k_error_widget.dart';
+import '../../../../core/reusable_widgets/logout_alert.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_font_sizes.dart';
 import '../../../../core/utils/icon_mapper.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../superadmin/presentation/providers/settings_provider.dart';
 import '../../domain/entities/settings_entity.dart';
 import '../providers/academics_provider.dart';
@@ -197,6 +199,18 @@ class _MenuCard extends StatelessWidget {
             break;
 
           case "logout":
+            AppDialogs.showLogoutDialog(
+              context: context,
+              onLogoutConfirmed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LoginScreen(),
+                  ),
+                      (route) => false,
+                );
+              },
+            );
             break;
         }
       },

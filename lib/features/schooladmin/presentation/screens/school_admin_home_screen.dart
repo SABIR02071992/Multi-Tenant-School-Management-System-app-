@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vidya_setu/core/reusable_widgets/k_custom_loader.dart';
+import '../../../../core/constants/route_constants.dart';
 import '../../../../core/reusable_widgets/k_error_widget.dart';
 import '../../../../core/reusable_widgets/k_welcome_card.dart';
 import '../../../../core/utils/color_mapper.dart';
@@ -20,6 +21,7 @@ class _SchoolAdminHomeScreenState extends ConsumerState<SchoolAdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final dashboard = ref.watch(dashboardProvider);
+    final isLoading = dashboard.isLoading;
 
     return dashboard.when(
       loading: () => const Center(child: KCustomLoader(message: 'Loading...',)),
@@ -43,7 +45,7 @@ class _SchoolAdminHomeScreenState extends ConsumerState<SchoolAdminHomeScreen> {
               16,
               16,
               16,
-              100,
+              0,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,12 +240,11 @@ class _SchoolAdminHomeScreenState extends ConsumerState<SchoolAdminHomeScreen> {
 
   /// Navigation method
   void _navigateToRoute(BuildContext context, String route) {
-    // TODO: Implement navigation based on route
-    // Example:
-    // switch (route) {
-    //   case 'students':
-    //     Navigator.push(context, MaterialPageRoute(builder: (_) => StudentsScreen()));
-    //     break;
+
+     switch (route) {
+       case 'students':
+         Navigator.pushNamed(context, AppRoutes.getStudentsListScreen);
+         break;
     //   case 'teachers':
     //     Navigator.push(context, MaterialPageRoute(builder: (_) => TeachersScreen()));
     //     break;
@@ -257,8 +258,7 @@ class _SchoolAdminHomeScreenState extends ConsumerState<SchoolAdminHomeScreen> {
     //     ScaffoldMessenger.of(context).showSnackBar(
     //       SnackBar(content: Text('Route: $route')),
     //     );
-    // }
-
+     }
     // Temporary: Show snackbar with route name
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

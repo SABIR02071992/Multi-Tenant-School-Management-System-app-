@@ -8,22 +8,6 @@ class CreateStudentRemoteDataSource {
   final Dio dio;
   CreateStudentRemoteDataSource(this.dio);
 
- /* Future<StudentModel> createStudent(StudentModel student) async {
-    try {
-      final response = await dio.post(
-        ApiClient.createStudent,
-        data: student.toJson(),
-      );
-
-      log("#Response ${response.data}");
-
-      return StudentModel.fromJson(response.data["data"]);
-    } catch (e, s) {
-      log("#Error $e");
-      debugPrintStack(stackTrace: s);
-      rethrow;
-    }
-  }*/
   Future<StudentModel> createStudent(StudentModel student) async {
     try {
       final formData = FormData.fromMap({

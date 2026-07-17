@@ -30,6 +30,7 @@ class ApiClient {
   static const String createStudent = '/api/v1/student/create';
   static const String createClasses = '/api/v1/class/create';
   static const String getClasses = '/api/v1/class/all';
+  static const String getStudents = '/api/v1/student/all';
 
 
 }

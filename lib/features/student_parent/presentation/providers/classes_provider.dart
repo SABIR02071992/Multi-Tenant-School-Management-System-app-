@@ -71,17 +71,41 @@ class CreateClassesNotifier extends StateNotifier<AsyncValue<ClassEntity?>> {
   }
 }
 
-class GetClassesNotifier
-    extends StateNotifier<AsyncValue<List<ClassEntity>>> {
+class GetClassesNotifier extends StateNotifier<AsyncValue<List<ClassEntity>>> {
   GetClassesNotifier(this.ref) : super(const AsyncData([]));
 
   final Ref ref;
 
+  /// First Load
   Future<void> getClasses() async {
+    if (state.hasValue && state.value!.isNotEmpty) {
+      return;
+    }
+
+    await fetchClasses(showLoader: true);
+  }
+
+  /// Pull To Refresh
+  Future<void> refresh() async {
+    await fetchClasses(showLoader: false);
+  }
+
+  Future<void> fetchClasses({required bool showLoader}) async {
     try {
-      state = const AsyncLoading();
-      await Future.delayed(const Duration(seconds: 2));
-      final response = await ref.read(createClassesUseCaseProvider).getClasses();
+      // 👇 Ye condition sirf first load ke liye honi chahiye
+      if (showLoader &&
+          state.hasValue &&
+          state.value!.isNotEmpty) {
+        return;
+      }
+
+      if (showLoader) {
+        state = const AsyncLoading();
+      }
+
+      final response =
+      await ref.read(createClassesUseCaseProvider).getClasses();
+
       state = AsyncData(response);
 
     } catch (e, stack) {
@@ -90,7 +114,7 @@ class GetClassesNotifier
       if (e is DioException) {
         final serverData = e.response?.data;
 
-        if (serverData != null && serverData is Map) {
+        if (serverData is Map) {
           errorMessage = serverData["message"] ?? errorMessage;
         } else {
           errorMessage = e.message ?? errorMessage;
@@ -103,6 +127,7 @@ class GetClassesNotifier
     }
   }
 }
+
 // Get All Classes Provider
 final getClassesProvider = StateNotifierProvider<
     GetClassesNotifier,

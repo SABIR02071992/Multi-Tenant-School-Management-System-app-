@@ -19,6 +19,7 @@ import '../../domain/entity/super_admin_entity.dart';
 import '../../../../core/constants/bottom_nav_provider.dart';
 import '../../../../core/constants/bottom_nav_visible_provider.dart';
 import '../providers/school_onboard_state_provider.dart';
+import '../providers/user_provider.dart';
 import 'super_admin_home_screen.dart';
 import 'onboard_new_school.dart';
 
@@ -52,7 +53,7 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
     final String? user = storage.getUser();
     final String? role = storage.getRole();
     final selectedIndex = ref.watch(bottomNavMenuProvider);
-
+    final isLoading = _disableBottomNavBarAndAppBar(selectedIndex);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -61,6 +62,7 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
         titles[selectedIndex],
         showBackButton: false,
         showLogoutButton: true,
+        disabled: isLoading,
       ),
       body: Stack(
         children: [
@@ -83,6 +85,7 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
                   : const Offset(0, 2),
               child: KBottomNavBar(
                 currentIndex: selectedIndex,
+                disabled: isLoading,
                 onTap: (index) {
                   ref.read(bottomNavMenuProvider.notifier).state = index;
                 },
@@ -111,4 +114,26 @@ class _SuperAdminDashboard extends ConsumerState<SuperAdminDashboard> {
       ),
     );
   }
- }
+  bool _disableBottomNavBarAndAppBar(int selectedIndex) {
+    final homeState = ref.watch(schoolProvider);
+    final schoolsState = ref.watch(schoolProvider);
+    final usersState = ref.watch(userProvider);
+
+    switch (selectedIndex) {
+      case 0:
+        return homeState.isLoading;
+
+      case 1:
+        return schoolsState.isLoading;
+
+      case 2:
+        return usersState.isLoading;
+
+      case 3:
+        return false;
+
+      default:
+        return false;
+    }
+  }
+}

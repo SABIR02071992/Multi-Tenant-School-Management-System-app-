@@ -111,10 +111,10 @@ class AppDialogs {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Dialog close karega
-                    //onLogoutConfirmed();    // Logout logic execute karega
-                    Navigator.pushReplacementNamed(context, AppRoutes.selectCollegeScreen,);
                     storage.logout();
+                    print("#Token: ${storage.getToken()}");
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, AppRoutes.selectCollegeScreen,);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.red,

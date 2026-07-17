@@ -10,6 +10,6 @@ class SchoolCollegeAdminEntity {
     required this.email,
     required this.phone,
     required this.schoolDomain,
-    this.role = 'school_college_admin'
+    this.role = 'School Admin'
   });
 }

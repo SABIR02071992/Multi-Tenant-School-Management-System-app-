@@ -91,6 +91,7 @@ class AppColors {
   static const warningLight = Color(0xFFFEF3C7);
   static const dangerLight = Color(0xFFFEE2E2);
   static const infoLight = Color(0xFFE0F2FE);
+  static const addButton = Color(0xFFE0F2FE);
 
   // =========================
   // Sidebar
